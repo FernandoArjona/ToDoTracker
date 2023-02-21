@@ -29,3 +29,16 @@ If you instead choose to save changes to an activity, you need only tap on SAVE,
 ![Screenshot06](https://github.com/FernandoArjona/ToDoTracker/blob/master/readme-images/Screenshot06.png)
 
 * third party library used: https://www.npmjs.com/package/react-native-keyboard-aware-scroll-view
+
+# Technical Details
+
+ToDoTracker is built with React Native, Expo, and is tested with Android (Pixel_XL_API_30). Granted that this is a very simple application, it does not rely on a strict design pattern in its design.
+
+The app uses a main home page, HomeScreen.js, and a template for activity pages called ToDoScreen.js. In addition, there is a component utilized in HomeScreen.js named ToDoItem.js that instanciates the activity bars we see on the home screen. 
+
+Data is stored locally in a JSON format as a global variable for the app. As the data is stored as a variable, it cannot be extracted as a file easily.
+
+# Installation
+You can download the APK for Android from here:
+
+If you install the source code with GitHub to use with Expo, you will need to make sure that your development enviorment or code editor meets Expo requirements. (Emulator installation, such as from Android Studio or XCode, setting up development enviorments, and installing Expo proper. This should be run with the "npx expo start" command.)
