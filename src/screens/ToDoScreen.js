@@ -25,7 +25,6 @@ function ToDoScreen(route) {
   }
 
   useEffect(() => {
-    console.log("to do screen tart");
     //listener allows readActivities to run properly
     const listener = navigation.addListener("focus", () => {
       readActivities();
