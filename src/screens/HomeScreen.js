@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollAreaView,
   ScrollView,
 } from "react-native";
 import ToDoItem from "../components/ToDoItem";
@@ -17,6 +16,7 @@ function HomeScreen() {
   const navigation = useNavigation();
 
   async function readActivities() {
+    //await AsyncStorage.clear();
     //reads activities from storage and sets them to display
     const activitiesInStorage = await AsyncStorage.getItem("activities").catch(
       function (error) {
@@ -24,6 +24,12 @@ function HomeScreen() {
         throw error;
       }
     );
+    if (activitiesInStorage == null) {
+      var defaultActivities = [];
+      const jsonActivities = JSON.stringify(defaultActivities);
+      await AsyncStorage.setItem("activities", jsonActivities);
+      activitiesInStorage = defaultActivities;
+    }
     setActivitiesInDisplay(JSON.parse(activitiesInStorage));
   }
 
@@ -80,21 +86,27 @@ function HomeScreen() {
     <View style={{ backgroundColor: "#FEFAE0", height: "100%" }}>
       <View style={{ width: "90%" }}>
         {activitiesInDisplay ? (
-          <ScrollView>
-            <View>
-              {activitiesInDisplay.map((activity, index) => {
-                return (
-                  <ToDoItem
-                    activity={activity}
-                    key={"toDoItem" + index}
-                    index={index}
-                    fadeActivity={fadeActivity}
-                  />
-                );
-              })}
-            </View>
-            <Text style={{ height: 100 }}></Text>
-          </ScrollView>
+          <View>
+            {activitiesInDisplay.length > 0 ? (
+              <ScrollView>
+                <View>
+                  {activitiesInDisplay.map((activity, index) => {
+                    return (
+                      <ToDoItem
+                        activity={activity}
+                        key={"toDoItem" + index}
+                        index={index}
+                        fadeActivity={fadeActivity}
+                      />
+                    );
+                  })}
+                </View>
+                <Text style={{ height: 100 }}></Text>
+              </ScrollView>
+            ) : (
+              <Text>Tap on the + button to add more items.</Text>
+            )}
+          </View>
         ) : (
           <Text>Loading activities...</Text>
         )}

@@ -1,7 +1,7 @@
-import { Button, KeyboardAvoidingView } from "react-native";
+import { Button, TouchableOpacity } from "react-native";
 import { View, StyleSheet, Text, TextInput, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -11,6 +11,27 @@ function ToDoScreen(route) {
   const [isShowingDeleteConfirmation, setShowingDeleteConfirmation] =
     useState(false);
   const navigation = useNavigation();
+  const [activitiesInStorage, setActivitiesInStorage] = useState();
+
+  async function readActivities() {
+    //reads activities from storage and sets them to display
+    const asyncActivities = await AsyncStorage.getItem("activities").catch(
+      function (error) {
+        console.log("ERROR" + error.message);
+        throw error;
+      }
+    );
+    setActivitiesInStorage(asyncActivities);
+  }
+
+  useEffect(() => {
+    console.log("to do screen tart");
+    //listener allows readActivities to run properly
+    const listener = navigation.addListener("focus", () => {
+      readActivities();
+    });
+    return listener;
+  }, []);
 
   //deletes the current activity from storage
   async function handleDelete() {
@@ -45,23 +66,31 @@ function ToDoScreen(route) {
   }
 
   //saves the current activity into storage as an update
-  async function handleSave() {
+  async function handleTitleChange(text) {
     //reads the activities in storage into a new copy
-    const activitiesInStorage = await AsyncStorage.getItem("activities").catch(
-      function (error) {
-        console.log("ERROR" + error.message);
-        throw error;
-      }
-    );
     //writes the current activity into the copy
+    var newAct = activity;
+    newAct.title = text;
     var activities = JSON.parse(activitiesInStorage);
-    activities[route.route.params.index] = activity;
+    activities[route.route.params.index] = newAct;
     const jsonActivities = JSON.stringify(activities);
     //updates the storage with the changes
-    await AsyncStorage.setItem("activities", jsonActivities);
-    Alert.alert("Activity saved!", "", [
-      { text: "OK", onPress: () => console.log("OK Pressed") },
-    ]);
+    AsyncStorage.setItem("activities", jsonActivities);
+    setActivity(newAct);
+  }
+
+  //saves the current activity into storage as an update
+  async function handleDescriptionChange(text) {
+    //reads the activities in storage into a new copy
+    //writes the current activity into the copy
+    var newAct = activity;
+    newAct.description = text;
+    var activities = JSON.parse(activitiesInStorage);
+    activities[route.route.params.index] = newAct;
+    const jsonActivities = JSON.stringify(activities);
+    //updates the storage with the changes
+    AsyncStorage.setItem("activities", jsonActivities);
+    setActivity(newAct);
   }
 
   //View
@@ -74,44 +103,16 @@ function ToDoScreen(route) {
           style={styles.textInputSmall}
           defaultValue={activity.title}
           onChangeText={(text) => {
-            //updates the current activity when this is changed
-            const update = activity;
-            update.title = text;
-            setActivity(update);
+            handleTitleChange(text);
           }}
         />
-      </View>
-      <Text style={styles.heading}>Description</Text>
-      <KeyboardAwareScrollView>
-        <View style={styles.container}>
-          <TextInput
-            editable={true}
-            multiline={true}
-            numberOfLines={5}
-            style={styles.textInputLarge}
-            defaultValue={activity.description}
-            onChangeText={(text) => {
-              //updates the current activity when this is changed
-              const update = activity;
-              update.description = text;
-              setActivity(update);
-            }}
-          />
-        </View>
-      </KeyboardAwareScrollView>
-      <View style={styles.buttonsContainer}>
-        <View style={styles.button}>
-          <Button
-            title="DELETE"
-            color={"red"}
-            onPress={() => {
-              setShowingDeleteConfirmation(true);
-            }}
-          ></Button>
-        </View>
-        <View style={styles.button}>
-          <Button title="SAVE" color={"green"} onPress={handleSave}></Button>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setShowingDeleteConfirmation(true);
+          }}
+        >
+          <Text style={styles.deleteButton}>   </Text>
+        </TouchableOpacity>
       </View>
       {isShowingDeleteConfirmation && (
         <View>
@@ -122,7 +123,7 @@ function ToDoScreen(route) {
             <View style={styles.button}>
               <Button
                 title="YES, DELETE"
-                color={"red"}
+                color="#a8190f"
                 onPress={handleDelete}
               ></Button>
             </View>
@@ -138,6 +139,22 @@ function ToDoScreen(route) {
           </View>
         </View>
       )}
+      <Text style={styles.heading}>Description</Text>
+
+      <KeyboardAwareScrollView>
+        <View style={styles.container}>
+          <TextInput
+            editable={true}
+            multiline={true}
+            numberOfLines={5}
+            style={styles.textInputLarge}
+            defaultValue={activity.description}
+            onChangeText={(text) => {
+              handleDescriptionChange(text);
+            }}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -149,6 +166,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     margin: 10,
+    display: "flex",
+    flexDirection: "row",
   },
   buttonsContainer: {
     display: "flex",
@@ -161,6 +180,7 @@ const styles = StyleSheet.create({
   textInputSmall: {
     fontSize: 20,
     padding: 5,
+    width: "90%"
   },
   textInputLarge: {
     fontSize: 20,
@@ -176,6 +196,12 @@ const styles = StyleSheet.create({
   button: {
     width: "40%",
     margin: 10,
+  },
+  deleteButton: {
+    width: 35,
+    height: 35,
+    backgroundColor: "#a8190f",
+    borderRadius: 100,
   },
 });
 
