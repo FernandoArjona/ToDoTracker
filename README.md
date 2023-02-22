@@ -23,6 +23,8 @@ Should you choose to delete the activity, you can tap on the red button adjacent
 
 If you confirm to delete the activity, the activity will be deleted from storage and you will be alerted about this change. (If you cancel, the options to confirm and cancel deletion are hidden until you tap on the red button again.)
 
+![Screenshot06](https://github.com/FernandoArjona/ToDoTracker/blob/master/readme-images/Screenshot06.png)
+
 * third party library used: https://www.npmjs.com/package/react-native-keyboard-aware-scroll-view
 
 # Technical Details
