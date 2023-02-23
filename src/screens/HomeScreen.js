@@ -9,27 +9,28 @@ import {
 import ToDoItem from "../components/ToDoItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { Button } from "react-native";
 
 function HomeScreen() {
   const [activitiesInDisplay, setActivitiesInDisplay] = useState();
   const [refreshOnlyBool, setRefreshOnlyBool] = useState(true);
   const navigation = useNavigation();
 
+
   async function readActivities() {
-    //await AsyncStorage.clear();
+    //const clear = await AsyncStorage.clear();
     //reads activities from storage and sets them to display
-    const activitiesInStorage = await AsyncStorage.getItem("activities").catch(
+    var activitiesInStorage = await AsyncStorage.getItem("activities").catch(
       function (error) {
         console.log("ERROR" + error.message);
         throw error;
       }
     );
     if (activitiesInStorage == null) {
-      var defaultActivities = [];
-      const jsonActivities = JSON.stringify(defaultActivities);
-      await AsyncStorage.setItem("activities", jsonActivities);
-      activitiesInStorage = defaultActivities;
+      activitiesInStorage = JSON.stringify([]);
+      await AsyncStorage.setItem("activities", activitiesInStorage);
     }
+    console.log(activitiesInStorage);
     setActivitiesInDisplay(JSON.parse(activitiesInStorage));
   }
 
@@ -67,6 +68,7 @@ function HomeScreen() {
       isFaded: false,
     };
     const activities = activitiesInDisplay;
+    console.log(activitiesInDisplay);
     activities.push(emptyActivity);
     const jsonActivities = JSON.stringify(activities);
     await AsyncStorage.setItem("activities", jsonActivities);
@@ -149,7 +151,14 @@ const styles = StyleSheet.create({
 export default HomeScreen;
 
 /*
-  async function testStorage(){
+<Button
+        title="DELETE EVERYTHING"
+        onPress={() => {
+          AsyncStorage.clear().then(() => console.log("Cleared"));
+        }}
+      ></Button>
+
+async function testStorage(){
     await AsyncStorage.setItem("testkey", "testvalue");
     const read = await AsyncStorage.getItem("testkey");
     console.log(read)

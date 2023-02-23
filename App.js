@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
 
+//eas build -p android --profile preview
 export default function App() {
   return (
     <NavigationContainer>
