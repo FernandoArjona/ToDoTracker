@@ -43,6 +43,6 @@ The app uses a main home page, HomeScreen.js, and a template for activity pages 
 Data is stored locally in a JSON format as a global variable for the app. As the data is stored as a variable, it cannot be extracted as a file easily.
 
 # Installation
-You can download the APK for Android from here:
+APK builds are currently unavailable.
 
 If you install the source code with GitHub to use with Expo, you will need to make sure that your development enviorment or code editor meets Expo requirements. (Emulator installation, such as from Android Studio or XCode, setting up development enviorments, and installing Expo proper. This should be run with the "npx expo start" command.)
